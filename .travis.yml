@@ -1,22 +1,14 @@
-sudo: required
-services:
-  - docker
-
-before_install:
-  - docker build -t xtophe02/docker-react -f Dockerfile.dev .
-
-script:
-  - docker run xtophe02/docker-react npm run test -- --coverage
-
+before_install: [docker build -t xtophe02/docker-react -f Dockerfile.dev .]
 deploy:
+  bucket_name: elasticbeanstalk-us-east-1-075709058334
+  true: {branch: master}
+  env: DockerReact
+  access_key_id: $AWS_ACCESS_KEY
   provider: elasticbeanstalk
   region: us-east-1
-  app: "docker-react"
-  env: "DockerReact"
-  bucket_name: "elasticbeanstalk-us-east-1-075709058334"
-  bucket_path: "docker-react"
-  on:
-    branch: master
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key:
-    secure: "$AWS_SECRET_KEY"
+  app: docker-react
+  bucket_path: docker-react
+  secret_access_key: {secure: $AWS_SECRET_KEY}
+script: [docker run xtophe02/docker-react npm run test -- --coverage]
+services: [docker]
+sudo: required
